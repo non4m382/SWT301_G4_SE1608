@@ -46,7 +46,7 @@
                             </ul>
                         </div>
                         <div class="log-out">
-                            <a href="log-out">Log out</a>
+                            <a href="login?action=logout">Log out</a>
                         </div>
                     </div>
                 </div>

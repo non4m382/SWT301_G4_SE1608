@@ -31,18 +31,18 @@
                         <div class="menu-item-container">
                             <ul class="item-lists">
                                 <li class="menu-item">
-                                    <a href="teacherhome">Home</a>
+                                    <a href="loadteacherhome">Home</a>
                                 </li>
                                 <li class="menu-item">
-                                    <a href="">View schedule</a>
+                                    <a href="#">View schedule</a>
                                 </li>
                                 <li class="menu-item current1">
-                                    <a href="" style="color: #fff;">View student</a>
+                                    <a href="#" style="color: #fff;">View student</a>
                                 </li>
                             </ul>
                         </div>
                         <div class="log-out">
-                            <a href="log-out">Log out</a>
+                            <a href="login?action=logout">Log out</a>
                         </div>
                     </div>
                 </div>

@@ -2,30 +2,30 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller;
+package controller.teacher;
 
-import dal.AccountDAO;
-import dal.ClassDAO;
-import dal.TeacherDAO;
+import dal.AttendanceDAO;
+import dal.StudentDAO;
+import java.io.IOException;
+import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import model.AccountRole;
+import model.Attendence;
 import model.Kinder_Class;
-
-import model.Parent;
+import model.Kindergartner;
 import model.Teacher;
 
 /**
  *
- * @author Admin
+ * @author Windows 10 TIMT
  */
-public class LoginServlet extends HttpServlet {
+public class checkOutServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +44,10 @@ public class LoginServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet LoginServlet</title>");
+            out.println("<title>Servlet checkOutServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet LoginServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet checkOutServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -65,18 +65,25 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getParameter("action");
-        if (action!=null) {
-            HttpSession session = request.getSession(true);
-            session.removeAttribute("account");
-            session.removeAttribute("teacher");
-            session.removeAttribute("kinder_class");
-            session.removeAttribute("present_kids");
-
-            response.sendRedirect("login");
+        HttpSession session = request.getSession(true);
+        AccountRole acc = (AccountRole) session.getAttribute("account");
+        List<Attendence> attendance = (ArrayList<Attendence>) session.getAttribute("present_kids");
+        if (acc != null) {
+            StudentDAO studao = new StudentDAO();
+            List<Kindergartner> list = new ArrayList<>();
+            for (Attendence a : attendance) {
+                if (a.getStatus() != 0) {
+                    Kindergartner k = studao.getKidInfoById(a.getStudent_id());
+                    list.add(k);
+                }
+            }
+            request.setAttribute("liststu", list);
+            request.getRequestDispatcher("teacher/checkout.jsp").forward(request, response);
         } else {
+            request.setAttribute("error", "Do you want to create an account?");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
+
     }
 
     /**
@@ -90,34 +97,26 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
         HttpSession session = request.getSession(true);
-
-        AccountDAO d = new AccountDAO();
-
-        AccountRole acc = d.getAllAccount(email, password);
-        try ( PrintWriter out = response.getWriter()) {
-//            out.println(accs);
-            if (acc != null && acc.getRole().equals("teacher")) {
-                ClassDAO classDao = new ClassDAO();
-                TeacherDAO teacherDao = new TeacherDAO();
-                List<Teacher> list = teacherDao.getAllTeacherInfor();
-                for (Teacher teacher : list) {
-                    if (teacher.getEmail().equals(email) && teacher.getPassword().equals(password)) {
-                        Kinder_Class kc = classDao.getTeacherClass(teacher.getTeacher_id());
-                        session.setAttribute("teacher", teacher);
-                        session.setAttribute("kinder_class", kc);
-                    }
-                }
-                session.setAttribute("account", acc);
-                response.sendRedirect("loadteacherhome");
-            } else {
-                request.setAttribute("error", "Account do not exist");
-                request.getRequestDispatcher("login.jsp").forward(request, response);
+        Kinder_Class kinder_class = (Kinder_Class) session.getAttribute("kinder_class");
+        Teacher teacher = (Teacher) session.getAttribute("teacher");
+        List<Attendence> checkoutkids = new ArrayList<>();
+        AttendanceDAO attDAO = new AttendanceDAO();
+        List<Kindergartner> list = attDAO.getAllCheckInKids(kinder_class.getClass_id());
+        String date = java.time.LocalDate.now().toString();
+        for (Kindergartner kindergartner : list) {
+            String check = request.getParameter("checkAttendence" + kindergartner.getKinder_id());
+            Attendence attendance = null;
+            if (check.equalsIgnoreCase("1")) {
+                attendance = new Attendence(kindergartner.getKinder_id(), date, 2, teacher.getTeacher_id());
+            } else if (check.equalsIgnoreCase("0")) {
+                attendance = new Attendence(kindergartner.getKinder_id(), date, 1, teacher.getTeacher_id());
             }
+            checkoutkids.add(attendance);
+            attDAO.updateAttendanceInfor(attendance);
         }
-
+        session.setAttribute("checkoutkids", checkoutkids);
+        response.sendRedirect("checkout");
     }
 
     /**
@@ -125,6 +124,7 @@ public class LoginServlet extends HttpServlet {
      *
      * @return a String containing servlet description
      */
+    @Override
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>

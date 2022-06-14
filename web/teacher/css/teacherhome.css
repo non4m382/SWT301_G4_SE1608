@@ -101,11 +101,10 @@
     background-color: #889BFF;
     color: #fff;
     border-radius: 20px;
-
-
 }
 
 .current>a{
+    color: #fff;
 }
 
 .menu-item-container .item-lists .menu-item {
@@ -141,12 +140,13 @@
     align-items: center;
 }
 
-form {
+.seach-section > form {
     color: #555;
     display: flex;
     padding: 2px;
     border: 1px solid currentColor;
     border-radius: 20px;
+    background-color: #fff;
 }
 
 .header-filter {
@@ -244,6 +244,7 @@ input[type="search"]:hover {
     text-decoration: none;
     display: flex;
     justify-content: center;
+    align-items: center;
     font-family: 'Inter', sans-serif;
 }
 
@@ -271,9 +272,10 @@ input[type="search"]:hover {
 }
 
 .body-container {
-    height: 487px;
+    height: 460px;
     overflow-y: scroll;
     margin-top: 20px;
+    padding-right: 5px;
 }
 
 .list-students {
@@ -289,6 +291,11 @@ input[type="search"]:hover {
     background-color: #fff;
     border-radius: 20px;
     padding: 20px 0;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
 }
 
 .student-infor h3,
@@ -313,6 +320,64 @@ input[type="search"]:hover {
 
 ::-webkit-scrollbar-thumb{
     background: #dddddd;
+}
+
+.list-students-ver2 .student-infor {
+    display: flex;
+    background-color: #fff;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    position: relative;
+}
+
+.student-infor a,
+.student-infor .check-attendance,
+.student-infor p {
+    display: flex;
+    align-items: center;
+    padding: 0px 10px;
+    text-decoration: none;
+    color: #000;
+}
+
+.student-infor .check-attendance {
+    position: absolute;
+    right: 0;
+    height: 100%;
+}
+
+.student-infor .check-attendance input {
+    margin: 0 5px;
+}
+
+form{
+    width: 100%;
+    display: block;
+    border: none;
+}
+
+.submit-btn{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.submit-btn input{
+    padding: 15px 40px;
+    background-color: #fff;
+    color: #000;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 20px;
+}
+
+.submit-btn input:hover{
+    background-color: #889BFF;
+    color: #fff;
 }
 
 

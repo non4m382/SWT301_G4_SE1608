@@ -25,6 +25,8 @@ public class StudentDAO {
     private Connection connection;
     private PreparedStatement ps;
     private ResultSet rs;
+    
+    
 
     public List<Kindergartner> getAllStudent() {
         List<Kindergartner> list = new ArrayList<>();
@@ -72,6 +74,7 @@ public class StudentDAO {
         }
         return null;
     }
+    
 
     public List<Kindergartner> getKidsByClass(int class_id) {
         StudentDAO dao = new StudentDAO();

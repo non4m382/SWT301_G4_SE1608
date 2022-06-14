@@ -34,18 +34,15 @@
                         <div class="menu-item-container">
                             <ul class="item-lists">
                                 <li class="menu-item current1">
-                                    <a href="teacher/teacherhome.jsp">Home</a>
+                                    <a href="#">Home</a>
                                 </li>
                                 <li class="menu-item">
                                     <a href="teacher/schedule.jsp">View schedule</a>
                                 </li>
-                                <li class="menu-item">
-                                    <a href="teacher/studenlist.jsp">View student</a>
-                                </li>
                             </ul>
                         </div>
                         <div class="log-out">
-                            <a href="log-out">Log out</a>
+                            <a href="login?action=logout">Log out</a>
                         </div>
                     </div>
                 </div>
@@ -84,30 +81,35 @@
                                     </div>
                                 </div>
                                 <div class="mode-menu right-mode">
-                                    <div class="window-mode mode-item">
+                                    <a href="#" class="window-mode mode-item current1">
                                         <img src="teacher/img/icon/372745201553239377-128.png" style="width: 33px; height: 35px; line-height: 32px;" alt="">
-                                    </div>
-                                    <div class="list-mode mode-item">
+                                    </a>
+                                    <a href="attendance" class="list-mode mode-item " style="text-decoration: none;">
                                         <i class="fa-solid fa-bars" style="font-size: 25px; line-height: 35px;"></i>
-                                    </div>
+                                    </a>
                                 </div>
                             </div>
                         </div>
                         <div class="body-container">
-                            <div class="list-students">
-                                <c:forEach items="${requestScope.listStudent}" var="student">
-                                    <a href="kidprofile?kid_id=${student.kinder_id}" class="student-infor">
-                                        <div class="img-section">
-                                            <img src="teacher/img/userImg/download.png" alt="">
+                            <form action="attendance" method="POST">
+                                <div class="list-students">
+                                    <c:forEach items="${requestScope.listStudent}" var="student">
+                                        <div href="kidprofile?kid_id=${student.kinder_id}" class="student-infor">
+                                            <div class="img-section">
+                                                <img src="teacher/img/userImg/download.png" alt="">
+                                            </div>
+                                            <a>${student.first_name} ${student.last_name}</a>
+                                            <div class="check-attendence">
+                                                <input type="radio" name="checkAttendence${student.kinder_id}" value="1" placeholder="Attend"> Attend
+                                                <input type="radio" name="checkAttendence${student.kinder_id}" value="0" placeholder="Absent"> Absent
+                                            </div>
                                         </div>
-                                        <h3>${student.first_name} ${student.last_name}</h3>
-                                        <div class="check-attendence">
-                                            <input type="radio" name="checkAttendence${student.kinder_id}" placeholder="Attend"> Attend
-                                            <input type="radio" name="checkAttendence${student.kinder_id}" placeholder="Absent"> Absent
-                                        </div>
-                                    </a>
-                                </c:forEach>
-                            </div>
+                                    </c:forEach>
+                                </div>
+                                <div class="submit-btn">
+                                    <input type="submit" name="Save" value="Save"/>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
