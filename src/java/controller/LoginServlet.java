@@ -6,6 +6,8 @@ package controller;
 
 import dal.AccountDAO;
 import dal.ClassDAO;
+import dal.ParentDAO;
+import dal.StaffDAO;
 import dal.TeacherDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -19,6 +21,7 @@ import model.AccountRole;
 import model.Kinder_Class;
 
 import model.Parent;
+import model.Staff;
 import model.Teacher;
 
 /**
@@ -66,7 +69,7 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        if (action!=null) {
+        if (action != null) {
             HttpSession session = request.getSession(true);
             session.removeAttribute("account");
             session.removeAttribute("teacher");
@@ -99,25 +102,64 @@ public class LoginServlet extends HttpServlet {
         AccountRole acc = d.getAllAccount(email, password);
         try ( PrintWriter out = response.getWriter()) {
 //            out.println(accs);
-            if (acc != null && acc.getRole().equals("teacher")) {
-                ClassDAO classDao = new ClassDAO();
-                TeacherDAO teacherDao = new TeacherDAO();
-                List<Teacher> list = teacherDao.getAllTeacherInfor();
-                for (Teacher teacher : list) {
-                    if (teacher.getEmail().equals(email) && teacher.getPassword().equals(password)) {
-                        Kinder_Class kc = classDao.getTeacherClass(teacher.getTeacher_id());
-                        session.setAttribute("teacher", teacher);
-                        session.setAttribute("kinder_class", kc);
-                    }
-                }
-                session.setAttribute("account", acc);
-                response.sendRedirect("loadteacherhome");
-            } else {
-                request.setAttribute("error", "Account do not exist");
+            if (acc == null) {
+                out.print("nope");
+                request.setAttribute("loginError", "Incorrect password");
+//            response.sendRedirect("login.jsp");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
-            }
-        }
+            } else {
+                switch (acc.getRole()) {
+                    case "parent":
+                        ParentDAO pd = new ParentDAO();
+                        Parent p = pd.getParentByMail(email, password);
+                        session.setAttribute("parent", p);
+                        request.getRequestDispatcher("parent.jsp").forward(request, response);
+                        break;
+                    case "teacher":
+                        ClassDAO classDao = new ClassDAO();
+                        TeacherDAO teacherDao = new TeacherDAO();
+                        List<Teacher> list = teacherDao.getAllTeacherInfor();
+                        for (Teacher teacher : list) {
+                            if (teacher.getEmail().equals(email) && teacher.getPassword().equals(password)) {
+                                Kinder_Class kc = classDao.getTeacherClass(teacher.getTeacher_id());
+                                session.setAttribute("teacher", teacher);
+                                session.setAttribute("kinder_class", kc);
+                            }
+                        }
+                        session.setAttribute("account", acc);
+                        response.sendRedirect("loadteacherhome");
+                        break;
+                    case "admin":
+                        StaffDAO sd = new StaffDAO();
+                        Staff s = sd.searchStaffByMail(email, password);
 
+                        session.setMaxInactiveInterval(30 * 60);
+                        session.setAttribute("staff", s);
+//                    response.sendRedirect("adminpage");
+//                    request.getRequestDispatcher("staff/adminpage.jsp").forward(request, response);
+                        response.sendRedirect("staff/adminpage.jsp");
+                }
+
+//                if (acc != null && acc.getRole().equals("teacher")) {
+//                    ClassDAO classDao = new ClassDAO();
+//                    TeacherDAO teacherDao = new TeacherDAO();
+//                    List<Teacher> list = teacherDao.getAllTeacherInfor();
+//                    for (Teacher teacher : list) {
+//                        if (teacher.getEmail().equals(email) && teacher.getPassword().equals(password)) {
+//                            Kinder_Class kc = classDao.getTeacherClass(teacher.getTeacher_id());
+//                            session.setAttribute("teacher", teacher);
+//                            session.setAttribute("kinder_class", kc);
+//                        }
+//                    }
+//                    session.setAttribute("account", acc);
+//                    response.sendRedirect("loadteacherhome");
+//                } else {
+//                    request.setAttribute("error", "Account do not exist");
+//                    request.getRequestDispatcher("login.jsp").forward(request, response);
+//                }
+            }
+
+        }
     }
 
     /**
